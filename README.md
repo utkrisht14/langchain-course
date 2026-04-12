@@ -1,2 +1,0 @@
-# langchain-course
-Langchain Course
