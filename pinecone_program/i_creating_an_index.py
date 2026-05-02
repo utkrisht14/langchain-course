@@ -282,9 +282,67 @@ index.delete(
 )
 
 
+# --------------------------------------------------
+# Update an entire document
+# --------------------------------------------------
 
+from pinecone.grpc import PineconeGRPC as Pinecone
 
+pc = Pinecone(api_key="YOUR_API_KEY")
 
+# To get the unique host for an index,
+# see https://docs.pinecone.io/guides/manage-data/target-an-index
+index = pc.Index(host="INDEX_HOST")
+
+# Step 1: Delete all existing chunks for the document
+index.delete(
+    namespace="example-namespace",
+    filter={
+        "document_id": {"$eq": "document1"}
+    }
+)
+
+print("Deleted existing chunks for document1")
+
+# Step 2: Upsert the updated document chunks
+chunk1_vector = ...  # from your embedding model
+chunk2_vector = ...
+index.upsert(
+  namespace="example-namespace",
+  vectors=[
+    {
+      "id": "document1#chunk1",
+      "values": chunk1_vector,
+      "metadata": {
+        "document_id": "document1",
+        "document_title": "Introduction to Vector Databases - Updated Edition",
+        "chunk_number": 1,
+        "chunk_text": "Updated first chunk with new content...",
+        "document_url": "https://example.com/docs/document1",
+        "created_at": "2024-02-15",
+        "document_type": "tutorial",
+        "version": "2.0"
+      }
+    },
+    {
+      "id": "document1#chunk2",
+      "values": chunk2_vector,
+      "metadata": {
+        "document_id": "document1",
+        "document_title": "Introduction to Vector Databases - Updated Edition",
+        "chunk_number": 2,
+        "chunk_text": "Updated second chunk with new content...",
+        "document_url": "https://example.com/docs/document1",
+        "created_at": "2024-02-15",
+        "document_type": "tutorial",
+        "version": "2.0"
+      }
+    }
+    # Add more chunks as needed for the updated document
+  ]
+)
+
+print("Successfully updated document1 with new chunks")
 
 
 
